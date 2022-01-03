@@ -1,0 +1,32 @@
+{
+  "name": "rslucena/hostess",
+  "description": "Hostess is a web application framework. It doesn't exist with the purpose of reinventing the wheel, but as a simple structure and with little study time, it is easy to learn and assemble large systems/applications.",
+  "authors": [
+    {
+      "name": "Rodrigo Lucena",
+      "email": "rodrigo@rslucena.com.br",
+      "homepage": "https://github.com/rslucena"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^8.0",
+    "workerman/workerman": "dev-master",
+    "workerman/mysql": "dev-master"
+  }
+  ,
+  "require-dev": {
+    "roave/security-advisories": "dev-master"
+  },
+  "config": {
+    "vendor-dir": "libraries"
+  },
+  "autoload": {
+    "classmap": [
+      "App"
+    ],
+    "psr-4": {
+      "App\\": "App/"
+    }
+  }
+}
