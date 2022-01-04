@@ -25,11 +25,13 @@ $DB = new Workerman\MySQL\Connection(DB_SERVE, DB_PORT, DB_USER, DB_PASS, DB_NAM
 //Set:SessionPath
 FileSessionHandler::sessionSavePath(DIR_SESSIONS);
 
+
 //Create:Server
 $HTTPServer = new Worker(APP_PROTOCOL . "://" . SERVER_IP . ":" . SERVER_PORT);
+
 $HTTPServer->name = SERVER_NAME;
 $HTTPServer->count = SERVER_WORKER;
-$HTTPServer::$stdoutFile = DIR_LOGS . '/HTTP/execute.log';
+$HTTPServer::$stdoutFile = DIR_LOGS . '/HTTP/Runtime.log';
 
 /**
  * Start automatic system tasks.
