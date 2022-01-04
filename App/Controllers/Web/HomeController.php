@@ -14,10 +14,10 @@ class HomeController extends BaseController
      * @param array $props
      * @return string
      */
-    public function start(array $props = array()): string
+    public function Start(array $props = array()): string
     {
 
-        $this->DataBase->select();
+        //$this->DataBase->select();
 
         return self::view(
             'Web/home.index.html',
@@ -34,7 +34,7 @@ class HomeController extends BaseController
      *
      * @return void
      */
-    public function login(): void
+    public function Login(): void
     {
     }
 
@@ -44,7 +44,7 @@ class HomeController extends BaseController
      * @return void
      *
      */
-    public function recuperar(): void
+    public function Recuperar(): void
     {
     }
 
@@ -54,7 +54,7 @@ class HomeController extends BaseController
      *
      * @return void
      */
-    public function error404(): void
+    public function Error404(): void
     {
 
     }
