@@ -4,19 +4,8 @@ namespace app\Migrations;
 
 use JetBrains\PhpStorm\NoReturn;
 
-class SyncMigrations
+class SyncMigrations extends BaseMigrations
 {
-
-    private array $MigrateTempFile;
-    public mixed $DataBase;
-
-    public function __construct()
-    {
-
-        global $DB;
-        $this->DataBase = $DB;
-
-    }
 
     /**
      * Initialize your database parameters:
@@ -47,9 +36,9 @@ class SyncMigrations
 
     /**
      * Return all migration files and version
-     * @return void
+     * @return array
      */
-    public function Get():void {
+    private function Get():array {
 
         $Files = array();
 
@@ -72,9 +61,38 @@ class SyncMigrations
 
     }
 
-    #[NoReturn] public function Sync() : void{
+    #[NoReturn] public function Sync() : string{
 
-        $SyncVersion = filemtime(DIR_MIGRATIONS . MIGRATION_SYNC_STATE);
+        if( file_exists(DIR_MIGRATIONS . MIGRATION_SYNC_STATE) === false ){
+
+            $Json = json_encode(array(
+                "version" => "1.0.0",
+                "generatedTime" => "1641317333818",
+                "data" => $this->Get()
+            ));
+
+            if ( file_put_contents(DIR_MIGRATIONS . MIGRATION_SYNC_STATE, $Json ) === false )
+            {
+                return "Error performing migrations.";
+            }
+
+            return "Migrations completed successfully.";
+
+        }
+
+
+        $FileSync = file_get_contents(DIR_MIGRATIONS . MIGRATION_SYNC_STATE );
+
+        $FileSync = json_decode( $FileSync, true  ) ?? array();
+
+        var_dump($FileSync);
+        die();
+
+        if(  empty($FileSync) ){
+
+
+
+        }
 
         try {
 
