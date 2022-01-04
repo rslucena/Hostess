@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace app\Bootstrap;
 
+use Exception;
 use JetBrains\PhpStorm\ArrayShape;
 
 /**
@@ -59,8 +60,14 @@ class Router
 
         $Action = $Function[1] ?? "";
 
-        if (!empty($Controller) || !empty($Action)) {
-            self::$Listing[self::$Platform][$Controller]['get'][$Name] = array($Action, self::$ContentType);
+        if (!empty($Controller) && !empty($Action)) {
+
+            self::$Listing[self::$Platform]['get'][$Name] = array(
+                $Action,
+                self::$ContentType,
+                $Controller
+            );
+
         }
 
     }
@@ -93,8 +100,12 @@ class Router
 
         $Action = $Function[1] ?? "";
 
-        if (!empty($Controller) || !empty($Action)) {
-            self::$Listing[self::$Platform][$Controller]['post'][$Name] = array($Action, self::$ContentType);
+        if (!empty($Controller) && !empty($Action)) {
+            self::$Listing[self::$Platform]['post'][$Name] = array(
+                $Action,
+                self::$ContentType,
+                $Controller
+            );
         }
 
     }
@@ -114,8 +125,11 @@ class Router
 
         $Action = $Function[1] ?? "";
 
-        if (!empty($Controller) || !empty($Action)) {
-            self::$Listing[self::$Platform][$Controller]['put'][$Name] = array($Action, self::$ContentType);
+        if ( !empty($Controller) && !empty($Action) ) {
+            self::$Listing[self::$Platform]['put'][$Name] = array(
+                $Action,
+                self::$ContentType,
+                $Controller);
         }
 
     }
@@ -123,7 +137,6 @@ class Router
     /**
      * Check if the path exists
      *
-     * @param string $Class
      * @param string $Uri
      * @param array $Parameters
      *
@@ -135,7 +148,7 @@ class Router
         'Function' => "string[]",
         'Platform' => "string[]",
         'Message' => "string"]
-    )] public static function run(string $Class, string $Uri, array $Parameters): array
+    )] public static function run(string $Uri, array $Parameters): array
     {
 
         $ReturnActions = array(
@@ -144,31 +157,40 @@ class Router
                 'Name' => '',
                 'Result' => '',
                 'CodeResponse' => '404'
-            ),
-            'Platform' => array(
-                'Content-Type' => ''
-            ),
-            'Message' => ''
+            )
         );
 
-        $FunctionClass = self::$Listing[self::$Platform][$Class][self::$Method][$Uri] ?? null;
+        $FunctionClass = self::$Listing[self::$Platform][self::$Method][$Uri] ?? null;
 
         //CALL FUNCTION
-        if (class_exists($Class) && (!empty($FunctionClass) && $FunctionClass[0] !== null)) {
+        if ( !empty($FunctionClass) ) {
 
-            $ReturnActions['Status'] = true;
-            $ReturnActions['Message'] = "Action performed successfully.";
+            try {
 
-            $ObjectClass = new $Class();
+                $ObjectClass = new $FunctionClass[2]();
 
-            if (method_exists($ObjectClass, $FunctionClass[0])) {
+                if (method_exists($ObjectClass, $FunctionClass[0])) {
 
-                $FunctionName = $FunctionClass[0];
+                    $FunctionName = ucfirst($FunctionClass[0]);
 
-                $ReturnActions['Function']['CodeResponse'] = '200';
-                $ReturnActions['Function']['Name'] = $FunctionName;
-                $ReturnActions['Platform']['Content-Type'] = $FunctionClass[1];
-                $ReturnActions['Function']['Result'] = $ObjectClass->$FunctionName($Parameters[strtoupper(self::$Method)]);
+                    $ReturnActions['Status'] = true;
+                    $ReturnActions['Function']['CodeResponse'] = '200';
+                    $ReturnActions['Message'] = "Action performed successfully.";
+
+                    $ReturnActions['Function']['Name'] = $FunctionName;
+                    $ReturnActions['Platform']['Content-Type'] = $FunctionClass[1];
+                    $ReturnActions['Function']['Result'] = $ObjectClass->$FunctionName($Parameters[strtoupper(self::$Method)]);
+
+                }
+
+            }catch ( Exception $exception ){
+
+                $ReturnActions['Function'] = array(
+                    'Name' => $FunctionClass[2] . "\\" . ucfirst($FunctionClass[0]),
+                    'CodeResponse' => '404'
+                );
+
+                $ReturnActions['Message'] = $exception->getMessage();
 
             }
 
