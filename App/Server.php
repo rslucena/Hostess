@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once DIR_CONFIG . '/Settings.php';
+require_once 'Environments.php';
 
 use app\Bootstrap\Builder;
 use Workerman\Connection\TcpConnection;
@@ -11,9 +11,9 @@ use Workerman\Protocols\Http\Response;
 use Workerman\Protocols\Http\Session\FileSessionHandler;
 use Workerman\Worker;
 
-require_once sprintf("%s/autoload.php", PATH_ROOT . DIR_VENDOR);
+require_once sprintf("%s/autoload.php", DIR_VENDOR);
 
-require_once sprintf("%s/Settings.php", PATH_ROOT . DIR_CONFIG);
+require_once sprintf("%s/Settings.php", DIR_CONFIG);
 
 //Create:Routes
 Builder::Routes();
@@ -23,13 +23,12 @@ global $DB;
 $DB = new Workerman\MySQL\Connection(DB_SERVE, DB_PORT, DB_USER, DB_PASS, DB_NAME);
 
 //Set:SessionPath
-FileSessionHandler::sessionSavePath(PATH_APP . DIR_SESSIONS);
+FileSessionHandler::sessionSavePath(DIR_SESSIONS);
 
 //Create:Server
 $HTTPServer = new Worker(APP_PROTOCOL . "://" . SERVER_IP . ":" . SERVER_PORT);
 $HTTPServer->name = SERVER_NAME;
 $HTTPServer->count = SERVER_WORKER;
-
 $HTTPServer::$stdoutFile = DIR_LOGS . '/HTTP/execute.log';
 
 /**
@@ -38,10 +37,7 @@ $HTTPServer::$stdoutFile = DIR_LOGS . '/HTTP/execute.log';
  * @param Worker $CronJobs
  */
 $HTTPServer->onWorkerStart = function (Worker $CronJobs) use ($DB) {
-
-
     //Timer::add(10, 'send_mail', array(), false);
-
 };
 
 /**
@@ -52,11 +48,13 @@ $HTTPServer->onWorkerStart = function (Worker $CronJobs) use ($DB) {
 $HTTPServer->onMessage = function (TcpConnection $Connection, Request $Request) {
 
     if ($Request->method() === 'OPTIONS') {
+
         $Connection->send(new Response(200, array(
             'Content-Type' => 'application/json',
             'Access-Control-Allow-Credentials' => true,
             'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS'
         )));
+
         return;
     }
 
@@ -77,14 +75,14 @@ $HTTPServer->onMessage = function (TcpConnection $Connection, Request $Request) 
 
         $Return->withStatus(200);
 
-        $IsModified = date('D, d M Y H:i:s', filemtime(PATH_ROOT . DIR_PUBLIC . $Request->path() ) )  . ' ' . date_default_timezone_get();
+        $IsModified = date('D, d M Y H:i:s', filemtime(DIR_PUBLIC . $Request->path() ) )  . ' ' . date_default_timezone_get();
 
         if ($IsModified === $Request->header('if-modified-since')) {
             $Connection->send(new Response(304));
             return;
         }
 
-        $Return->withFile(PATH_ROOT . DIR_PUBLIC . $Request->path());
+        $Return->withFile(DIR_PUBLIC . $Request->path());
 
         $Connection->send($Return);
     }

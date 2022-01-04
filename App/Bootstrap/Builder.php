@@ -6,6 +6,7 @@ namespace app\Bootstrap;
 
 use app\Controllers\Api\CustomerController;
 use app\Controllers\Web\HomeController;
+use app\Migrations\SyncMigrations;
 use JetBrains\PhpStorm\ArrayShape;
 
 /**
@@ -38,6 +39,7 @@ class Builder
         //Set:Cli
         Router::ContentType('text/html');
         Router::platform('Cli');
+        Router::get('/migrations/sync', [SyncMigrations::class, 'sync']);
 
         //Router::put('clientes/avatar', array());
 
@@ -57,7 +59,7 @@ class Builder
     {
 
         $CurrentFile = "";
-        $Path = PATH_ROOT . DIR_VIEW . DIRECTORY_SEPARATOR . $File ;
+        $Path = DIR_VIEW . DIRECTORY_SEPARATOR . $File ;
 
         if (file_exists($Path) === false) {
             return $CurrentFile;
@@ -116,19 +118,28 @@ class Builder
     {
 
         $Header = $Request->header();
-        $UserAgent = strtolower($Header['user-platform-agent'] ?? $Header['user-agent'] ?? "cli/command");
+
+        $UserAgent = strtolower($Header['user-platform-agent'] ?? $Header['user-agent'] ) ?? "cli/command";
 
         $Platform = match (true) {
             str_contains($UserAgent, "mobile") => 'Api',
-            str_contains($UserAgent, "cli") => 'Cli',
+            str_contains($UserAgent, 'cli') ||
+            str_contains($UserAgent, "curl") => 'Cli',
             default => 'Web',
         };
 
         $Reference = explode('/', $Request->uri() ) ?? array();
 
         $ControllerName = !empty($Reference[1]) ? $Reference[1] : "Home";
-        $ControllerName = DIR_CONTROL . "\\" . $Platform . "\\". $ControllerName . 'Controller';
-        $ControllerName = substr_replace($ControllerName, "app", 0, 4);
+
+        if( $Platform !== 'Cli' ){
+            $ControllerName = DIR_CONTROL . "\\" . $Platform . "\\". $ControllerName . 'Controller';
+        }
+        else{
+            $ControllerName = PATH_APP . "\\". ucfirst($ControllerName);
+        }
+
+        $ControllerName = substr_replace($ControllerName, "app", 0, 3);
 
         $ActionName = strtolower(!empty($Reference[2]) ? $Reference[2] : "Index");
 
@@ -185,7 +196,7 @@ class Builder
             return $ReturnActions;
         }
 
-        return array_merge($ReturnActions, Router::run($ControllerName, strtolower($Request->uri()), $ReturnActions['Parameters']));
+        return array_merge($ReturnActions, Router::run(strtolower($Request->uri()), $ReturnActions['Parameters']));
 
     }
 
