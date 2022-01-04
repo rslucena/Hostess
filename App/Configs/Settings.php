@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-require_once DIR_CONFIG . "/Environments.php";
-
 ini_set('memory_limit', CONF_MEMORYLIMIT);
 
 date_default_timezone_set(APP_LOCALE);
