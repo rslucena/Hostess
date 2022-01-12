@@ -12,7 +12,8 @@
   "require": {
     "php": "^8.0",
     "workerman/workerman": "dev-master",
-    "workerman/mysql": "dev-master"
+    "workerman/mysql": "dev-master",
+    "ext-pdo": "*"
   }
   ,
   "require-dev": {

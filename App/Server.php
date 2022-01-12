@@ -18,13 +18,8 @@ require_once sprintf("%s/Settings.php", DIR_CONFIG);
 //Create:Routes
 Builder::Routes();
 
-//Create:DataBaseConnect
-global $DB;
-$DB = new Workerman\MySQL\Connection(DB_SERVE, DB_PORT, DB_USER, DB_PASS, DB_NAME);
-
 //Set:SessionPath
 FileSessionHandler::sessionSavePath(DIR_SESSIONS);
-
 
 //Create:Server
 $HTTPServer = new Worker(APP_PROTOCOL . "://" . SERVER_IP . ":" . SERVER_PORT);
@@ -38,7 +33,7 @@ $HTTPServer::$stdoutFile = DIR_LOGS . '/HTTP/Runtime.log';
  * Controlled by worker timer.
  * @param Worker $CronJobs
  */
-$HTTPServer->onWorkerStart = function (Worker $CronJobs) use ($DB) {
+$HTTPServer->onWorkerStart = function (Worker $CronJobs) {
     //Timer::add(10, 'send_mail', array(), false);
 };
 
