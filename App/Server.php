@@ -44,6 +44,8 @@ $HTTPServer->onWorkerStart = function (Worker $CronJobs) {
  */
 $HTTPServer->onMessage = function (TcpConnection $Connection, Request $Request) {
 
+    //$Connection->send('<h1>hello world</h1>');
+
     if ($Request->method() === 'OPTIONS') {
 
         $Connection->send(new Response(200, array(
