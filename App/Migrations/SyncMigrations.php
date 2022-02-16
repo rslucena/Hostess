@@ -6,13 +6,11 @@ use JetBrains\PhpStorm\NoReturn;
 
 class SyncMigrations extends BaseMigrations
 {
-
     /**
      * Initialize your database parameters:
      */
-    public function Message( array $argv = array()  ): string
+    public function Message(array $argv = []): string
     {
-
         $message = "";
 
         if (count($argv) <= 1) {
@@ -21,103 +19,83 @@ class SyncMigrations extends BaseMigrations
         }
 
         return $message;
-
     }
 
     /**
      * Compre current database version
      * @return string
      */
-    public function CompareVersion() : string{
-
+    public function CompareVersion(): string
+    {
         return  "";
-
     }
 
     /**
      * Return all migration files and version
      * @return array
      */
-    private function Get():array {
+    private function Get(): array
+    {
+        $Files = [];
 
-        $Files = array();
-
-        while ( $File = readdir( opendir(DIR_MIGRATIONS_TEMP ) ) ) {
-
-            if (str_starts_with( $File , MIGRATION_EXTENSION)) {
-
-                $Files[] = array(
+        while ($File = readdir(opendir(DIR_MIGRATIONS_TEMP))) {
+            if (str_starts_with($File, MIGRATION_EXTENSION)) {
+                $Files[] = [
                     'file' => $File,
-                    'version' => filemtime($File)
-                );
-
+                    'version' => filemtime($File),
+                ];
             }
-
         }
 
         asort($Files);
 
         $this->MigrateTempFile = $Files;
-
     }
 
-    #[NoReturn] public function Sync() : string{
-
-        if( file_exists(DIR_MIGRATIONS . MIGRATION_SYNC_STATE) === false ){
-
-            $Json = json_encode(array(
+    #[NoReturn]
+ public function Sync(): string
+ {
+     if (file_exists(DIR_MIGRATIONS . MIGRATION_SYNC_STATE) === false) {
+         $Json = json_encode([
                 "version" => "1.0.0",
                 "generatedTime" => "1641317333818",
-                "data" => $this->Get()
-            ));
+                "data" => $this->Get(),
+            ]);
 
-            if ( file_put_contents(DIR_MIGRATIONS . MIGRATION_SYNC_STATE, $Json ) === false )
-            {
-                return "Error performing migrations.";
-            }
+         if (file_put_contents(DIR_MIGRATIONS . MIGRATION_SYNC_STATE, $Json) === false) {
+             return "Error performing migrations.";
+         }
 
-            return "Migrations completed successfully.";
-
-        }
+         return "Migrations completed successfully.";
+     }
 
 
-        $FileSync = file_get_contents(DIR_MIGRATIONS . MIGRATION_SYNC_STATE );
+     $FileSync = file_get_contents(DIR_MIGRATIONS . MIGRATION_SYNC_STATE);
 
-        $FileSync = json_decode( $FileSync, true  ) ?? array();
+     $FileSync = json_decode($FileSync, true) ?? [];
 
-        var_dump($FileSync);
-        die();
+     var_dump($FileSync);
+     die();
 
-        if(  empty($FileSync) ){
+     if (empty($FileSync)) {
+     }
 
+     try {
+         foreach ($this->MigrateTempFile as $migrate => $query) {
+             $this->DataBase->beginTrans();
 
+             $this->MigrateTempFile[$migrate]['status'] = $this->DataBase->query($query);
 
-        }
+             if ($this->MigrateTempFile[$migrate]['status']) {
+                 $this->DataBase->commitTrans();
 
-        try {
+                 continue;
+             }
 
-            foreach ( $this->MigrateTempFile as $migrate => $query ){
-
-                $this->DataBase->beginTrans();
-
-                $this->MigrateTempFile[$migrate]['status'] = $this->DataBase->query( $query );
-
-                if( $this->MigrateTempFile[$migrate]['status'] ) {
-
-                    $this->DataBase->commitTrans();
-                    continue;
-
-                }
-
-                $this->DataBase->rollBackTrans();
-
-            }
-
-        }catch ( \Exception $exception ){
-
-            var_dump($exception);
-
-        }
-
-    }
+             $this->DataBase->rollBackTrans();
+         }
+     } catch (\Exception $exception) {
+         var_dump($exception);
+     }
+ }
 }

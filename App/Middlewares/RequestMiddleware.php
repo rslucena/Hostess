@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace app\Middlewares;
 
-
 use app\Providers\AuthProvider;
 use app\Providers\LogProvider;
 
@@ -14,7 +13,6 @@ use JsonException;
 
 class RequestMiddleware
 {
-
     /**
      * Creates a request to any other HTTP
      * server or to the same * in CURL
@@ -28,7 +26,7 @@ class RequestMiddleware
      * @return null|array
      * @throws JsonException
      */
-    public static function request($method, $end, array $props = array(), bool $token = false, string $api = APP_API): ?array
+    public static function request($method, $end, array $props = [], bool $token = false, string $api = APP_API): ?array
     {
 
         //INITIALIZATION
@@ -41,8 +39,7 @@ class RequestMiddleware
         curl_setopt($curl, CURLOPT_HTTPHEADER, self::getHeader($token));
 
         //FILE EXIST
-        if (!empty($props) && array_column($props, 'tmp_name')) {
-
+        if (! empty($props) && array_column($props, 'tmp_name')) {
             $method = "POST";
             curl_setopt($curl, CURLOPT_POST, true);
 
@@ -52,11 +49,8 @@ class RequestMiddleware
             }
 
             curl_setopt($curl, CURLOPT_POSTFIELDS, $props);
-
         } else {
-
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($props, JSON_THROW_ON_ERROR));
-
         }
 
         //CONFIGS
@@ -82,10 +76,8 @@ class RequestMiddleware
 
         curl_close($curl);
 
-        return self::buildReturn($response, array($method, $end, $props, $token));
-
+        return self::buildReturn($response, [$method, $end, $props, $token]);
     }
-
 
     /**
      * Creates the header for the CURL request
@@ -96,13 +88,12 @@ class RequestMiddleware
      */
     private static function getHeader(bool $token = false): array
     {
+        $authorization = [];
 
-        $authorization = array();
+        $head = ['Content-Type: application/json'];
 
-        $head = array('Content-Type: application/json');
-
-        if (!empty($_FILES)) {
-            $head = array('Content-Type:multipart/form-data');
+        if (! empty($_FILES)) {
+            $head = ['Content-Type:multipart/form-data'];
         }
 
         if ($token === false) {
@@ -113,13 +104,12 @@ class RequestMiddleware
             $authorization = AuthProvider::getSession('config', 'token');
         }
 
-        if (!empty($authorization)) {
+        if (! empty($authorization)) {
             $head[] = 'Authorization: Bearer ' . $authorization;
         }
 
         return $head;
     }
-
 
     /**
      * Returns an array of results
@@ -132,28 +122,25 @@ class RequestMiddleware
      */
     public static function buildReturn($resp, $request): array
     {
-
-        $response = array();
+        $response = [];
 
         $res = json_decode($resp, true);
 
-        $response['origin'] = array();
-        $response['Router'] = array();
+        $response['origin'] = [];
+        $response['Router'] = [];
 
-        if (!empty($res)) {
+        if (! empty($res)) {
             $response['origin'] = $res;
         }
 
         $response['Router'] = $request;
 
-        if (!empty($response['origin']['access_token'])) {
+        if (! empty($response['origin']['access_token'])) {
             AuthProvider::auth($response['origin']['access_token'], false);
         }
 
         return $response;
-
     }
-
 
     /**
      * Retrieves all values ​​
@@ -163,9 +150,7 @@ class RequestMiddleware
      */
     public static function buildInput(): ?array
     {
-
         return $_REQUEST;
-
     }
 
     /**
@@ -176,11 +161,8 @@ class RequestMiddleware
      */
     public static function buildFiles(): ?array
     {
-
         return $_FILES;
-
     }
-
 
     /**
      * Validates a field based
@@ -193,7 +175,6 @@ class RequestMiddleware
      */
     public static function validate($field, $rules): bool
     {
-
         $valid = true;
 
         if (strpos($rules, "|") === false) {
@@ -203,7 +184,7 @@ class RequestMiddleware
         $rules = explode('|', $rules);
 
         $rules = array_filter($rules, static function ($value) {
-            return !empty($value) || $value === 0;
+            return ! empty($value) || $value === 0;
         });
 
         if (empty($rules)) {
@@ -211,7 +192,6 @@ class RequestMiddleware
         }
 
         foreach ($rules as $rule) {
-
             $MinMax = 0;
             $dateFormat = "Y-m-d H:i:s";
 
@@ -219,62 +199,67 @@ class RequestMiddleware
                 strpos($rule, "min:") !== false ||
                 strpos($rule, "max:") !== false
             ) {
-
                 $stale = explode(":", $rule);
                 $rule = $stale[0];
 
-                if (!empty($stale[1])) {
+                if (! empty($stale[1])) {
                     $MinMax = $stale[1];
                 }
-
             }
 
             if (strpos($rule, "date") !== false
             ) {
-
                 $stale = explode(":", $rule);
                 $rule = $stale[0];
-                if (!empty($stale[1])) {
+                if (! empty($stale[1])) {
                     $dateFormat = $stale[1];
                 }
             }
 
             switch ($rule) {
 
-                case 'text' :
+                case 'text':
                     $valid = is_string($field);
+
                     break;
 
-                case 'number' :
+                case 'number':
                     $valid = is_numeric($field);
+
                     break;
 
-                case 'required' :
-                    $valid = !empty($field);
+                case 'required':
+                    $valid = ! empty($field);
+
                     break;
 
-                case 'email' :
+                case 'email':
                     $email = filter_var($field, FILTER_VALIDATE_EMAIL);
-                    $valid = !is_bool($email);
+                    $valid = ! is_bool($email);
+
                     break;
 
-                case 'min' :
+                case 'min':
                     $valid = strlen($field) >= $MinMax;
+
                     break;
 
-                case 'max' :
+                case 'max':
                     $valid = strlen($field) <= $MinMax;
+
                     break;
 
-                case 'date' :
+                case 'date':
 
                     $date = DateTime::createFromFormat($dateFormat, $field);
-                    return !empty($date);
+
+                    return ! empty($date);
+
                     break;
 
-                case 'equals' :
+                case 'equals':
 
-                    $equal = array();
+                    $equal = [];
 
                     foreach (array_count_values($field) as $val => $c) {
                         if ($c > 1) {
@@ -282,13 +267,13 @@ class RequestMiddleware
                         }
                     }
 
-                    return !empty($equal);
+                    return ! empty($equal);
 
                     break;
 
-                case 'file' :
+                case 'file':
 
-                    if (!is_array($field)) {
+                    if (! is_array($field)) {
                         return false;
                     }
 
@@ -297,7 +282,7 @@ class RequestMiddleware
                     $field = $field[$input];
 
                     $name = "";
-                    if (!empty($field['tmp_name'])) {
+                    if (! empty($field['tmp_name'])) {
                         $name = $field['tmp_name'];
                     }
 
@@ -305,11 +290,11 @@ class RequestMiddleware
 
                     break;
 
-                default :
+                default:
                     return $valid;
+
                     break;
             }
-
         }
 
         return $valid;
@@ -324,24 +309,18 @@ class RequestMiddleware
      *
      * @return bool
      */
-    public static function key_exists($props, $keys = array()): bool
+    public static function key_exists($props, $keys = []): bool
     {
-
-        if (!is_array($keys) || empty($props)) {
+        if (! is_array($keys) || empty($props)) {
             return false;
         }
 
-        $valid = array();
+        $valid = [];
 
         foreach ($keys as $key) {
             $valid[] = array_key_exists($key, $props);
         }
 
-        return !(in_array(false, $valid, true));
-
+        return ! (in_array(false, $valid, true));
     }
-
-
 }
-
-

@@ -8,25 +8,23 @@ use app\Controllers\BaseController;
 
 class HomeController extends BaseController
 {
-
     /**
      * Main page
      * @param array $props
      * @return string
      */
-    public function Start(array $props = array()): string
+    public function Start(array $props = []): string
     {
 
         //$this->DataBase->select();
 
         return self::view(
             'Web/home.index.html',
-            array(
+            [
                 'user' => 'Rodrigo',
-                'system' => array('m' => 1, 'm1' => 2, 'm2' => 3, 'm3' => 4, 'm4' => 5, 'm5' => 6)
-            ));
-
-
+                'system' => ['m' => 1, 'm1' => 2, 'm2' => 3, 'm3' => 4, 'm4' => 5, 'm5' => 6],
+            ]
+        );
     }
 
     /**
@@ -56,7 +54,5 @@ class HomeController extends BaseController
      */
     public function Error404(): void
     {
-
     }
-
 }

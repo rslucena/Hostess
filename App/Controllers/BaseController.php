@@ -6,38 +6,31 @@ use app\Bootstrap\Builder;
 
 class BaseController extends Builder
 {
-
     public mixed $DataBase;
 
     public function __construct()
     {
-
         global $DB;
         $this->DataBase = $DB;
-
     }
 
-    function create(array $props): array
+    public function create(array $props): array
     {
-
-        return array();
-
+        return [];
     }
 
-    function show( int $id, string $cols = '*' ): array
+    public function show(int $id, string $cols = '*'): array
     {
-        return array();
+        return [];
     }
 
-    function update(array $filter, array $props): array
+    public function update(array $filter, array $props): array
     {
-        return array();
+        return [];
     }
 
-    function destroy(array $filter, array $props): array
+    public function destroy(array $filter, array $props): array
     {
-
-        return array();
+        return [];
     }
-
 }

@@ -8,7 +8,6 @@ use JsonException;
 
 class ResultMiddleware
 {
-
     /**
      * Creates a response interface for external or internal functions
      * standardization the data output
@@ -18,29 +17,32 @@ class ResultMiddleware
      *
      * @return void|array
      */
-    public static function result($status = 401, $props = array()): ?array
+    public static function result($status = 401, $props = []): ?array
     {
-
         $return = [];
 
         switch ($status) {
             case 0:
                 $return['status'] = 'error';
+
                 break;
             case 1:
                 $return['status'] = 'info';
+
                 break;
             case 2:
                 $return['status'] = 'success';
+
                 break;
             default:
                 self::forceEnd($status);
+
                 break;
         }
 
-        $props = !empty($props) ? $props : array();
+        $props = ! empty($props) ? $props : [];
 
-        if (!empty($props['status'])) {
+        if (! empty($props['status'])) {
             $return['status'] = $props['status'];
             unset($props['status']);
         }
@@ -73,13 +75,6 @@ class ResultMiddleware
      */
     private static function buildJson($resp): string
     {
-
         return json_encode($resp, JSON_THROW_ON_ERROR);
-
     }
-
 }
-
-
-
-

@@ -17,12 +17,11 @@ use JetBrains\PhpStorm\ArrayShape;
  */
 class Builder
 {
-
     /**
      * Route Builder
      * @return void
      */
-    static public function Routes(): void
+    public static function Routes(): void
     {
 
         //Set:Web
@@ -42,7 +41,6 @@ class Builder
         Router::get('/migrations/sync', [SyncMigrations::class, 'sync']);
 
         //Router::put('clientes/avatar', array());
-
     }
 
     /**
@@ -55,9 +53,8 @@ class Builder
      * @return string
      *
      */
-    static public function view(string $File, array $Props): string
+    public static function view(string $File, array $Props): string
     {
-
         $CurrentFile = "";
         $Path = DIR_VIEW . DIRECTORY_SEPARATOR . $File ;
 
@@ -69,32 +66,27 @@ class Builder
 
         preg_match_all('/({)(.*?)(})/', $CurrentFile, $SequenceKeys, PREG_PATTERN_ORDER);
 
-        $SequenceKeys = $SequenceKeys[0] ?? array();
+        $SequenceKeys = $SequenceKeys[0] ?? [];
 
         if (empty($SequenceKeys)) {
             return $CurrentFile;
         }
 
         foreach ($SequenceKeys as $Values) {
-
-            $Reference = explode('.', str_replace(array('{', '}'), '', $Values));
+            $Reference = explode('.', str_replace(['{', '}'], '', $Values));
             $NeedSearch = $Props[$Reference[0]];
             unset($Reference[0]);
 
             if (is_array($NeedSearch)) {
-
                 foreach ($Reference as $Key) {
                     $NeedSearch = $NeedSearch[$Key] ?? "";
                 }
-
             }
 
             $CurrentFile = str_replace($Values, (string)$NeedSearch, $CurrentFile);
-
         }
 
         return $CurrentFile;
-
     }
 
     /**
@@ -113,13 +105,12 @@ class Builder
         'Function' => "array",
         'Parameters' => "array",
         'Redirect' => "array",
-        'Message' => "string"])]
-    static function execute(object $Request): array
+        'Message' => "string", ])]
+    public static function execute(object $Request): array
     {
-
         $Header = $Request->header();
 
-        $UserAgent = strtolower($Header['user-platform-agent'] ?? $Header['user-agent'] ) ?? "cli/command";
+        $UserAgent = strtolower($Header['user-platform-agent'] ?? $Header['user-agent']) ?? "cli/command";
 
         $Platform = match (true) {
             str_contains($UserAgent, "mobile") => 'Api',
@@ -128,76 +119,73 @@ class Builder
             default => 'Web',
         };
 
-        $Reference = explode('/', $Request->uri() ) ?? array();
+        $Reference = explode('/', $Request->uri()) ?? [];
 
-        $ControllerName = !empty($Reference[1]) ? $Reference[1] : "Home";
+        $ControllerName = ! empty($Reference[1]) ? $Reference[1] : "Home";
 
-        if( $Platform !== 'Cli' ){
+        if ($Platform !== 'Cli') {
             $ControllerName = DIR_CONTROL . "\\" . $Platform . "\\". $ControllerName . 'Controller';
-        }
-        else{
+        } else {
             $ControllerName = PATH_APP . "\\". ucfirst($ControllerName);
         }
 
         $ControllerName = substr_replace($ControllerName, "app", 0, 3);
 
-        $ActionName = strtolower(!empty($Reference[2]) ? $Reference[2] : "Index");
+        $ActionName = strtolower(! empty($Reference[2]) ? $Reference[2] : "Index");
 
         //Structure:Return
-        $ReturnActions = array(
+        $ReturnActions = [
 
             'Class' => $ControllerName,
 
-            'Header' => array(
+            'Header' => [
                 'Host' => $Request->host(),
-                'ProtocolVersion' => $Request->protocolVersion()
-            ),
+                'ProtocolVersion' => $Request->protocolVersion(),
+            ],
 
-            'User' => array(
+            'User' => [
                 'Logged' => false,
                 'Token' => "",
-                'Info' => array()
-            ),
+                'Info' => [],
+            ],
 
-            'Platform' => array(
+            'Platform' => [
                 'Mode' => Router::platform($Platform),
-                'Method' => Router::method( strtolower($Request->method()) ),
+                'Method' => Router::method(strtolower($Request->method())),
                 'Content-Type' => "",
-                'IsFile' => pathinfo($Request->uri(), PATHINFO_EXTENSION) !== ""
-            ),
+                'IsFile' => pathinfo($Request->uri(), PATHINFO_EXTENSION) !== "",
+            ],
 
             'Status' => false,
 
-            'Function' => array(
+            'Function' => [
                 'Uri' => pathinfo($Request->uri()),
                 'Action' => $ActionName,
                 'Name' => "",
                 'Result' => "",
                 'CodeResponse' => "404",
-            ),
+            ],
 
-            'Parameters' => array(
+            'Parameters' => [
                 'GET' => $Request->get(),
                 'POST' => $Request->post(),
                 'Query' => $Request->queryString(),
-                'Files' => $Request->file()
-            ),
+                'Files' => $Request->file(),
+            ],
 
-            'Redirect' => array(
+            'Redirect' => [
                 'force' => false,
-                'location' => ""
-            ),
+                'location' => "",
+            ],
 
             'Message' => "Method not allocated for application.",
 
-        );
+        ];
 
-        if( $ReturnActions['Platform']['IsFile'] ){
+        if ($ReturnActions['Platform']['IsFile']) {
             return $ReturnActions;
         }
 
         return array_merge($ReturnActions, Router::run(strtolower($Request->uri()), $ReturnActions['Parameters']));
-
     }
-
 }

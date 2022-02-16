@@ -10,19 +10,19 @@ const PATH_APP = PATH_ROOT . DIRECTORY_SEPARATOR . 'App';
 const DIR_VENDOR = PATH_ROOT . DIRECTORY_SEPARATOR . 'Libraries';
 
 #DIRS
-const DIR_BOOT =  PATH_APP . DIRECTORY_SEPARATOR . 'Bootstrap';
-const DIR_CACHE =  PATH_APP . DIRECTORY_SEPARATOR . 'Cache';
-const DIR_CONFIG =  PATH_APP . DIRECTORY_SEPARATOR . 'Configs';
-const DIR_CONTROL =  PATH_APP . DIRECTORY_SEPARATOR . 'Controllers';
-const DIR_DOC =  PATH_APP . DIRECTORY_SEPARATOR . 'Documentation';
-const DIR_LOGS =  PATH_APP . DIRECTORY_SEPARATOR . 'Logs';
-const DIR_Middleware =  PATH_APP . DIRECTORY_SEPARATOR . 'Middlewares';
+const DIR_BOOT = PATH_APP . DIRECTORY_SEPARATOR . 'Bootstrap';
+const DIR_CACHE = PATH_APP . DIRECTORY_SEPARATOR . 'Cache';
+const DIR_CONFIG = PATH_APP . DIRECTORY_SEPARATOR . 'Configs';
+const DIR_CONTROL = PATH_APP . DIRECTORY_SEPARATOR . 'Controllers';
+const DIR_DOC = PATH_APP . DIRECTORY_SEPARATOR . 'Documentation';
+const DIR_LOGS = PATH_APP . DIRECTORY_SEPARATOR . 'Logs';
+const DIR_Middleware = PATH_APP . DIRECTORY_SEPARATOR . 'Middlewares';
 
-const DIR_MODEL =  PATH_APP . DIRECTORY_SEPARATOR . 'Models';
-const DIR_PROVIDER =  PATH_APP . DIRECTORY_SEPARATOR . 'Providers';
-const DIR_PUBLIC =  PATH_APP . DIRECTORY_SEPARATOR . 'Public';
-const DIR_SESSIONS =  PATH_APP . DIRECTORY_SEPARATOR . 'Sessions';
-const DIR_VIEW =  PATH_APP . DIRECTORY_SEPARATOR . 'View';
+const DIR_MODEL = PATH_APP . DIRECTORY_SEPARATOR . 'Models';
+const DIR_PROVIDER = PATH_APP . DIRECTORY_SEPARATOR . 'Providers';
+const DIR_PUBLIC = PATH_APP . DIRECTORY_SEPARATOR . 'Public';
+const DIR_SESSIONS = PATH_APP . DIRECTORY_SEPARATOR . 'Sessions';
+const DIR_VIEW = PATH_APP . DIRECTORY_SEPARATOR . 'View';
 
 #SYSTEM
 const SERVER_NAME = 'HTTP:SERVER';
@@ -36,7 +36,7 @@ const SERVER_IP = '0.0.0.0';
 const APP_NAME = 'Hostess framework';
 const APP_VERSION = '1.0.0';
 const APP_DESCRIPTION = "Hostess is a web application framework. It doesn't exist with the purpose of reinventing the wheel, but as a simple structure and with little study time, it is easy to learn and assemble large systems/applications.";
-define( 'APP_PROTOCOL' , 'HTTP' ?? (!empty($_SERVER['HTTPS']) ? 'HTTPS' : 'HTTP') );
+define('APP_PROTOCOL', 'HTTP' ?? (! empty($_SERVER['HTTPS']) ? 'HTTPS' : 'HTTP'));
 
 
 #LOCALE
@@ -61,8 +61,8 @@ const CONF_REPORTING = E_ALL;
 #MIGRATIONS
 const MIGRATION_EXTENSION = ".migrate";
 const MIGRATION_SYNC_STATE = "/migrate-sync-state.json";
-const DIR_MIGRATIONS =  PATH_APP . DIRECTORY_SEPARATOR . 'Migrations';
-const DIR_MIGRATIONS_TEMP =  DIR_MIGRATIONS . DIRECTORY_SEPARATOR . 'Temp';
+const DIR_MIGRATIONS = PATH_APP . DIRECTORY_SEPARATOR . 'Migrations';
+const DIR_MIGRATIONS_TEMP = DIR_MIGRATIONS . DIRECTORY_SEPARATOR . 'Temp';
 
 
 #ENCRYPTION

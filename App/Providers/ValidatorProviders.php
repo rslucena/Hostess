@@ -4,8 +4,7 @@ namespace app\Providers;
 
 class ValidatorProviders
 {
-
-    private static array $Errors = array();
+    private static array $Errors = [];
 
     /**
      * Create validator
@@ -17,15 +16,12 @@ class ValidatorProviders
      */
     public static function Make(array $Props, array $Roles): object
     {
-
         $Roles = array_map(function ($Key) {
             return explode('|', $Key);
         }, $Roles);
 
         foreach ($Roles as $Keys => $Role) {
-
             foreach ($Role as $Key => $Function) {
-
                 $NumberLimit = 0;
                 $NameFunction = ucfirst($Function);
 
@@ -35,16 +31,13 @@ class ValidatorProviders
                 }
 
                 $Props[$Keys][$Key] = self::$NameFunction($Props[$Keys], $NumberLimit);
-
             }
-
         }
 
-        return (object)array(
+        return (object)[
             'Props' => $Props,
-            'Roles' => $Roles
-        );
-
+            'Roles' => $Roles,
+        ];
     }
 
     /**
@@ -56,7 +49,6 @@ class ValidatorProviders
      */
     public static function withErrors(): array
     {
-
         foreach (self::$Errors as $key => $error) {
             if (empty($error)) {
                 unset(self::$Errors[$key]);
@@ -64,7 +56,6 @@ class ValidatorProviders
         }
 
         return self::$Errors;
-
     }
 
     /**
@@ -78,8 +69,7 @@ class ValidatorProviders
      */
     private static function Required(mixed $Value): array
     {
-        return !empty($Value) ? array() : array('Empty mandatory field.');
-
+        return ! empty($Value) ? [] : ['Empty mandatory field.'];
     }
 
     /**
@@ -91,7 +81,7 @@ class ValidatorProviders
      */
     private static function String(mixed $Value): array
     {
-        return is_string($Value) ? array() : array('The field is not text.');
+        return is_string($Value) ? [] : ['The field is not text.'];
     }
 
     /**
@@ -104,7 +94,7 @@ class ValidatorProviders
      */
     private static function Min(string $Value, int $Min): array
     {
-        return !empty($Value) && strlen($Value) > $Min ? array() : array('The value does not contain the expected minimum.');
+        return ! empty($Value) && strlen($Value) > $Min ? [] : ['The value does not contain the expected minimum.'];
     }
 
     /**
@@ -117,7 +107,7 @@ class ValidatorProviders
      */
     private static function Max(string $Value, int $Max): array
     {
-        return !empty($Value) && strlen($Value) <= $Max ? array() : array('This value exceeds the limit stipulated for the field.');
+        return ! empty($Value) && strlen($Value) <= $Max ? [] : ['This value exceeds the limit stipulated for the field.'];
     }
 
     /**
@@ -128,7 +118,7 @@ class ValidatorProviders
      */
     private static function Email(string $Value): array
     {
-        return filter_var($Value, FILTER_VALIDATE_EMAIL) ? array() : array('No valid email was found.');
+        return filter_var($Value, FILTER_VALIDATE_EMAIL) ? [] : ['No valid email was found.'];
     }
 
     /**
@@ -139,7 +129,6 @@ class ValidatorProviders
      */
     private static function Number(mixed $Value): array
     {
-        return is_numeric("") ? array() : array('It is not a numerical value.');
+        return is_numeric("") ? [] : ['It is not a numerical value.'];
     }
-
 }

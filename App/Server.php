@@ -43,14 +43,12 @@ $HTTPServer->onWorkerStart = function (Worker $CronJobs) {
  * @param Request $Request
  */
 $HTTPServer->onMessage = function (TcpConnection $Connection, Request $Request) {
-
     if ($Request->method() === 'OPTIONS') {
-
-        $Connection->send(new Response(200, array(
+        $Connection->send(new Response(200, [
             'Content-Type' => 'application/json',
             'Access-Control-Allow-Credentials' => true,
-            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS'
-        )));
+            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+        ]));
 
         return;
     }
@@ -68,14 +66,14 @@ $HTTPServer->onMessage = function (TcpConnection $Connection, Request $Request) 
     $Header['Content-Type'] = $ResponseAction['Platform']['Content-Type'];
 
     //Set:Format File
-    if (!empty($ResponseAction['Platform']['IsFile'])) {
-
+    if (! empty($ResponseAction['Platform']['IsFile'])) {
         $Return->withStatus(200);
 
-        $IsModified = date('D, d M Y H:i:s', filemtime(DIR_PUBLIC . $Request->path() ) )  . ' ' . date_default_timezone_get();
+        $IsModified = date('D, d M Y H:i:s', filemtime(DIR_PUBLIC . $Request->path()))  . ' ' . date_default_timezone_get();
 
         if ($IsModified === $Request->header('if-modified-since')) {
             $Connection->send(new Response(304));
+
             return;
         }
 
@@ -93,7 +91,6 @@ $HTTPServer->onMessage = function (TcpConnection $Connection, Request $Request) 
 
     //Send:Response
     $Connection->send($Return);
-
 };
 
 /**

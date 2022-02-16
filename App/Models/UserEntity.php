@@ -6,8 +6,7 @@ namespace app\Models;
 
 class UserEntity
 {
-
-    public array $props = array();
+    public array $props = [];
 
     /**
      * Initializes building a user
@@ -17,7 +16,6 @@ class UserEntity
      */
     public function __construct($props)
     {
-
         $this->props = $props;
 
         //Rebuild the access
@@ -28,7 +26,6 @@ class UserEntity
 
         //Build the reference (url)
         $this->has_reference();
-
     }
 
     /**
@@ -39,17 +36,11 @@ class UserEntity
      */
     private function has_access(): void
     {
-
         if (empty($this->props['parceiro_id'])) {
-
             AuthProvider::updateSession('config', 'experiences', 0);
-
         } else {
-
             AuthProvider::updateSession('config', 'experiences', $this->props['parceiro_id']);
-
         }
-
     }
 
     /**
@@ -60,14 +51,11 @@ class UserEntity
      */
     private function has_avatar(): string
     {
-
         $size = '37x37';
         $url = 'https://via.placeholder.com/';
 
         if (empty($this->props['avatar'])) {
-
             $this->props['avatar'] = $url . $size;
-
         }
 
         $this->props['avatar'] = APP_API . $this->props['avatar'];
@@ -83,7 +71,6 @@ class UserEntity
      */
     private function has_reference(): string
     {
-
         $name = $this->props['nome'];
 
         if (empty($this->props['email'])) {
@@ -102,9 +89,7 @@ class UserEntity
      */
     public function build(): array
     {
-
         return $this->props;
-
     }
 
     /**
@@ -113,7 +98,6 @@ class UserEntity
      */
     public function __destruct()
     {
-        $this->props = array();
+        $this->props = [];
     }
-
 }
