@@ -91,7 +91,6 @@ class DataBase
 
             $this->DataBase->commit();
         } catch (PDOException $Exception) {
-
             // Reconnect once when the server is disconnected
             if ((string)$Exception->errorInfo[1] === "2006" || (string)$Exception->errorInfo[2] === "2013") {
                 $this->closeConnection();

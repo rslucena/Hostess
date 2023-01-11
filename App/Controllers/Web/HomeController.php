@@ -15,7 +15,6 @@ class HomeController extends BaseController
      */
     public function Start(array $props = []): string
     {
-
         //$this->DataBase->select();
 
         return self::view(

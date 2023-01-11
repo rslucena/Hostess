@@ -23,7 +23,6 @@ class Builder
      */
     public static function Routes(): void
     {
-
         //Set:Web
         Router::ContentType('text/html');
         Router::get('/', [HomeController::class, 'start']);

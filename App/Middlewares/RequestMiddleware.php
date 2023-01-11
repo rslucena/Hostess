@@ -28,7 +28,6 @@ class RequestMiddleware
      */
     public static function request($method, $end, array $props = [], bool $token = false, string $api = APP_API): ?array
     {
-
         //INITIALIZATION
         $curl = curl_init();
 
@@ -217,7 +216,6 @@ class RequestMiddleware
             }
 
             switch ($rule) {
-
                 case 'text':
                     $valid = is_string($field);
 
