@@ -1,7 +1,3 @@
-<p align="center"><a href="#" target="_blank">
-    <img style="filter: invert(1) brightness(1);" height="100px" src="https://rslucena.com.br/dados/flashicon.png" />
-</a></p>
-
 ## About Hostess
 
 Hostess is a Web Application Framework. It doesn't exist with the purpose of reinventing the wheel, but as a simple structure and with little study time, it is easy to learn and assemble large systems/applications.
